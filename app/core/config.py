@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
 import secrets
+import os
 
 
 class Settings(BaseSettings):
@@ -37,3 +38,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Set MONGODB_URI for loopy-basic package
+os.environ["MONGODB_URI"] = settings.mongodb_uri
