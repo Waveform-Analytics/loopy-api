@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     
     # MongoDB connection (from environment variables)
     mongodb_username: str
-    mongodb_password: str  
+    mongodb_pw: str  
     mongodb_uri: str
     mongodb_database: str = "myCGMitc"
     

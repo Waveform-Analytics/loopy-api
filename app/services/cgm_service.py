@@ -2,6 +2,7 @@ from loopy.data.cgm import CGMDataAccess
 from datetime import datetime, timedelta
 from typing import Dict, Any
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -46,12 +47,28 @@ class CGMService:
                 # Convert DataFrame to JSON-serializable format
                 data_records = df.to_dict('records')
                 
-                # Convert datetime objects to strings for JSON serialization
+                # Convert datetime objects, ObjectIds, and numpy types to JSON-serializable types
                 for record in data_records:
                     if 'datetime' in record:
                         record['datetime'] = record['datetime'].isoformat()
                     if 'date_only' in record:
                         record['date_only'] = str(record['date_only'])
+                    # Convert ObjectId to string
+                    if '_id' in record:
+                        record['_id'] = str(record['_id'])
+                    # Handle any other ObjectId fields and numpy types
+                    for key, value in record.items():
+                        if hasattr(value, '__class__') and value.__class__.__name__ == 'ObjectId':
+                            record[key] = str(value)
+                        # Convert numpy types to native Python types
+                        elif isinstance(value, np.integer):
+                            record[key] = int(value)
+                        elif isinstance(value, np.floating):
+                            record[key] = float(value)
+                        elif isinstance(value, np.ndarray):
+                            record[key] = value.tolist()
+                        elif hasattr(value, 'item'):  # Other numpy scalars
+                            record[key] = value.item()
                 
                 return {
                     "data": data_records,
