@@ -10,13 +10,13 @@ Create a **DIY web-based diabetes monitoring application** similar to Nightscout
 
 This plan has been split into focused implementation guides for each repository:
 
-- **[LOOPY_API_IMPLEMENTATION.md](./LOOPY_API_IMPLEMENTATION.md)** - Complete backend API implementation guide
+- **[LOOPY_API_IMPLEMENTATION.md](LOOPY_API_IMPLEMENTATION.md)** - Complete backend API implementation guide
 - **[LOOPY_WEB_IMPLEMENTATION.md](./LOOPY_WEB_IMPLEMENTATION.md)** - Complete frontend web application guide
 
 ## Quick Start
 
 1. **Publish loopy-basic to PyPI** (see below)
-2. **Backend**: Follow [LOOPY_API_IMPLEMENTATION.md](./LOOPY_API_IMPLEMENTATION.md)
+2. **Backend**: Follow [LOOPY_API_IMPLEMENTATION.md](LOOPY_API_IMPLEMENTATION.md)
 3. **Frontend**: Follow [LOOPY_WEB_IMPLEMENTATION.md](./LOOPY_WEB_IMPLEMENTATION.md)
 
 ## Architecture Decision: Separate Repositories
@@ -167,6 +167,7 @@ async def root():
 ```
 
 **app/core/config.py**
+
 ```python
 from pydantic_settings import BaseSettings
 from typing import Optional
@@ -183,7 +184,7 @@ class Settings(BaseSettings):
     api_port: int = 8000
     
     class Config:
-        env_file = ".env"
+        env_file = "../.env"
 
 settings = Settings()
 ```

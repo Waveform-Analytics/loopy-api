@@ -72,30 +72,32 @@ from pydantic_settings import BaseSettings
 from typing import Optional
 import secrets
 
+
 class Settings(BaseSettings):
     """Application settings from environment variables."""
-    
+
     # MongoDB connection (from environment variables)
     mongodb_username: str
-    mongodb_pw: str  
+    mongodb_pw: str
     mongodb_uri: str
     mongodb_database: str = "myCGMitc"
-    
+
     # API settings
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     api_reload: bool = False
-    
+
     # Authentication
     api_key: str = secrets.token_urlsafe(32)  # Generate random key if not provided
     api_keys: str = ""  # Optional: comma-separated list for multiple keys
-    
+
     # CORS settings
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
-    
+
     class Config:
-        env_file = ".env"
+        env_file = "../.env"
         case_sensitive = False
+
 
 settings = Settings()
 ```
