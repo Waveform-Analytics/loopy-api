@@ -1,16 +1,22 @@
 # Loopy API
 
-A FastAPI-based backend service that provides a REST API for accessing CGM (Continuous Glucose Monitor) data from MongoDB. Built for DIY diabetes monitoring setups using the `loopy-basic` package.
+A secure, authenticated FastAPI-based backend service that provides a REST API for accessing CGM (Continuous Glucose Monitor) data from MongoDB. Built for DIY diabetes monitoring setups using the `loopy-basic` package.
 
-## Features
+## 🚀 Live API: https://loopy-api-production.up.railway.app
 
-- FastAPI Framework - Modern, fast web framework with automatic API documentation
-- MongoDB Integration - Uses loopy-basic package for seamless data access
-- Environment Configuration - Secure MongoDB credential management
-- Type Safety - Full type hints and Pydantic models
-- Docker Ready - Container deployment with minimal configuration
-- CORS Enabled - Frontend integration ready
-- Data Analysis - Built-in glucose analysis and statistics
+**Status**: ✅ Deployed and operational with Bearer token authentication
+
+## Features ✅ Implemented
+
+- **FastAPI Framework** - Modern, fast web framework with automatic API documentation
+- **Authentication** - Bearer token security for medical data protection
+- **MongoDB Integration** - Uses loopy-basic package with secure URI templating
+- **Environment Configuration** - Secure MongoDB credential management
+- **Type Safety** - Full type hints and Pydantic models
+- **Railway Deployment** - Cloud deployment with environment variables
+- **CORS Enabled** - Frontend integration ready for localhost development
+- **JSON Serialization** - Proper handling of numpy/ObjectId types
+- **Data Analysis** - Built-in glucose analysis and statistics
 
 ## Quick Start
 
@@ -24,7 +30,7 @@ A FastAPI-based backend service that provides a REST API for accessing CGM (Cont
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/loopy-api.git
+git clone https://github.com/Waveform-Analytics/loopy-api.git
 cd loopy-api
 ```
 
@@ -51,21 +57,32 @@ uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/` | Root endpoint with service info |
-| `GET` | `/api/health` | Health check endpoint |
-| `GET` | `/api/ping` | Simple ping for monitoring |
-| `GET` | `/api/cgm/current` | Get current glucose reading |
-| `GET` | `/api/cgm/status` | Data availability status |
-| `GET` | `/api/cgm/data?hours=24` | Get CGM data for specified hours |
-| `GET` | `/api/cgm/analysis/{period}` | Get analysis (24h/week/month) |
+### Authentication Required
+All CGM endpoints require Bearer token authentication:
+```bash
+Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s
+```
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/` | Root endpoint with service info | No |
+| `GET` | `/health` | Health check endpoint | No |
+| `GET` | `/api/cgm/current` | Get current glucose reading | **Yes** |
+| `GET` | `/api/cgm/status` | Data availability status | **Yes** |
+| `GET` | `/api/cgm/data?hours=24` | Get CGM data for specified hours | **Yes** |
+| `GET` | `/api/cgm/analysis/{period}` | Get analysis (24h/week/month) | **Yes** |
 
 ## Example Usage
 
-### Get Current Glucose Reading
+### Get Current Glucose Reading (Authentication Required)
 ```bash
-curl http://localhost:8000/api/cgm/current
+# Local development
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  http://localhost:8000/api/cgm/current
+
+# Production API
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  https://loopy-api-production.up.railway.app/api/cgm/current
 ```
 
 **Response:**
@@ -81,9 +98,15 @@ curl http://localhost:8000/api/cgm/current
 }
 ```
 
-### Get 24-Hour Data with Analysis
+### Get 24-Hour Data with Analysis (Authentication Required)
 ```bash
-curl "http://localhost:8000/api/cgm/data?hours=24"
+# Local development
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  "http://localhost:8000/api/cgm/data?hours=24"
+
+# Production API
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  "https://loopy-api-production.up.railway.app/api/cgm/data?hours=24"
 ```
 
 **Response:**
@@ -123,11 +146,14 @@ curl "http://localhost:8000/api/cgm/data?hours=24"
 Create a `.env` file with your MongoDB credentials:
 
 ```env
-# MongoDB Atlas Configuration
+# MongoDB Atlas Configuration (Secure Templating)
 MONGODB_USERNAME=your_username
 MONGODB_PW=your_password
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
+MONGODB_URI_TEMPLATE=mongodb+srv://{username}:{password}@cluster.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DATABASE=myCGMitc
+
+# Authentication
+API_KEY=your_secure_api_key_here
 
 # API Configuration
 API_HOST=0.0.0.0
@@ -154,12 +180,27 @@ docker run -p 8000:8000 --env-file .env loopy-api
 docker-compose up -d
 ```
 
-## Cloud Deployment
+## Cloud Deployment ✅ Live on Railway
 
-### Railway (Recommended)
-1. Connect your GitHub repository to Railway
-2. Set environment variables in the Railway dashboard
-3. Deploy automatically on push
+### Current Deployment
+- **Platform**: Railway
+- **URL**: https://loopy-api-production.up.railway.app
+- **Repository**: Connected to GitHub main branch
+- **Auto-deploy**: Enabled on git push
+- **Environment**: All variables configured in Railway dashboard
+
+### Setup Your Own Deployment
+
+#### Railway (Recommended)
+1. Fork the repository: https://github.com/Waveform-Analytics/loopy-api
+2. Connect your GitHub repository to Railway
+3. Set environment variables in Railway dashboard:
+   - `MONGODB_USERNAME`
+   - `MONGODB_PW` 
+   - `MONGODB_URI_TEMPLATE`
+   - `MONGODB_DATABASE`
+   - `API_KEY`
+4. Deploy automatically on push
 
 ### Other Options
 - **Render**: Free tier available
@@ -169,28 +210,47 @@ docker-compose up -d
 
 ## Testing
 
-### Health Check
+### Health Check (No Authentication)
 ```bash
-curl http://localhost:8000/api/health
+# Local
+curl http://localhost:8000/health
+
+# Production
+curl https://loopy-api-production.up.railway.app/health
 ```
 
-### Data Status
+### Data Status (Authentication Required)
 ```bash
-curl http://localhost:8000/api/cgm/status
+# Local
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  http://localhost:8000/api/cgm/status
+
+# Production
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  https://loopy-api-production.up.railway.app/api/cgm/status
 ```
 
-### Analysis
+### Analysis (Authentication Required)
 ```bash
-curl http://localhost:8000/api/cgm/analysis/24h
+# Local
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  http://localhost:8000/api/cgm/analysis/24h
+
+# Production
+curl -H "Authorization: Bearer 5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s" \
+  https://loopy-api-production.up.railway.app/api/cgm/analysis/24h
 ```
 
-## Security
+## Security ✅ Implemented
 
-- Environment-based configuration (no hardcoded credentials)
-- CORS properly configured for frontend origins
-- Input validation on all endpoints
-- Read-only database access
-- HTTPS required in production
+- **Bearer Token Authentication** - All CGM endpoints protected
+- **Environment-based configuration** - No hardcoded credentials
+- **MongoDB URI templating** - Secure credential separation
+- **CORS properly configured** - Frontend origins whitelisted
+- **Input validation** - All endpoints validate parameters
+- **Read-only database access** - No write operations
+- **HTTPS in production** - Railway provides SSL certificates
+- **JSON serialization security** - Proper handling of numpy/ObjectId types
 
 ## Development
 
@@ -216,21 +276,28 @@ loopy-api/
 │   ├── main.py                # FastAPI app entry point
 │   ├── api/                   # API routes
 │   │   ├── __init__.py
-│   │   ├── cgm.py            # CGM data endpoints
+│   │   ├── cgm.py            # CGM data endpoints (with auth)
 │   │   └── health.py         # Health check endpoints
 │   ├── core/                  # Core functionality
 │   │   ├── __init__.py
-│   │   └── config.py         # Environment configuration
+│   │   ├── auth.py           # Bearer token authentication
+│   │   ├── config.py         # Environment configuration
+│   │   └── cors.py           # CORS settings
 │   ├── models/                # Pydantic response models
 │   │   ├── __init__.py
 │   │   └── cgm.py            # CGM data models
 │   └── services/              # Business logic
 │       ├── __init__.py
 │       └── cgm_service.py    # Uses loopy-basic package
-├── Dockerfile
+├── notes/                     # Documentation
+│   ├── API_BEGINNER_GUIDE.md
+│   ├── AUTHENTICATION_GUIDE.md
+│   ├── LOOPY_API_IMPLEMENTATION.md
+│   └── WEB_APP_IMPLEMENTATION_PLAN.md
+├── Dockerfile                 # Railway deployment
 ├── docker-compose.yml
-├── pyproject.toml
-├── .env.example
+├── pyproject.toml            # uv dependency management
+├── uv.lock                   # Lock file
 └── README.md
 ```
 
@@ -248,16 +315,26 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Related Projects
 
-- [loopy-basic](https://github.com/yourusername/loopy-basic) - Core CGM data access library
-- [loopy-web](https://github.com/yourusername/loopy-web) - Frontend web application
+- [loopy-basic](https://github.com/Waveform-Analytics/loopy-basic) - Core CGM data access library
+- **loopy-web** - Frontend web application (next phase)
+
+## For Frontend Developers
+
+**Ready to integrate with your React/Vue/Angular app:**
+- **API Base URL**: `https://loopy-api-production.up.railway.app`
+- **API Key**: `5w6DXf7OSYtNl5wHHX_sSTViUmZfslMhjoAwOqtLZ0s`
+- **CORS**: Configured for `localhost:3000` and `localhost:5173`
+- **Documentation**: Available at `/docs` endpoint
+- **Authentication**: Include `Authorization: Bearer <token>` header for CGM endpoints
 
 ## Support
 
 If you encounter any issues or have questions:
 
-1. Check the [Issues](https://github.com/yourusername/loopy-api/issues) page
+1. Check the [Issues](https://github.com/Waveform-Analytics/loopy-api/issues) page
 2. Create a new issue with details about your problem
 3. Include your environment details and error messages
+4. For authentication issues, verify your API key and endpoint URLs
 
 ---
 
