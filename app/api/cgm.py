@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from app.services.cgm_service import CGMService
+from app.core.auth import verify_api_key
 from typing import Dict, Any
 
 router = APIRouter()
@@ -7,7 +8,8 @@ router = APIRouter()
 
 @router.get("/data")
 async def get_cgm_data(
-    hours: int = Query(24, ge=1, le=168, description="Hours of data to retrieve (1-168)")
+    hours: int = Query(24, ge=1, le=168, description="Hours of data to retrieve (1-168)"),
+    _: str = Depends(verify_api_key)
 ) -> Dict[str, Any]:
     """Get CGM data for the specified number of hours.
     
@@ -27,7 +29,9 @@ async def get_cgm_data(
 
 
 @router.get("/current")
-async def get_current_glucose() -> Dict[str, Any]:
+async def get_current_glucose(
+    _: str = Depends(verify_api_key)
+) -> Dict[str, Any]:
     """Get the most recent glucose reading.
     
     Returns:
@@ -43,7 +47,9 @@ async def get_current_glucose() -> Dict[str, Any]:
 
 
 @router.get("/status")
-async def get_data_status() -> Dict[str, Any]:
+async def get_data_status(
+    _: str = Depends(verify_api_key)
+) -> Dict[str, Any]:
     """Get data availability and connection status.
     
     Returns:
@@ -60,7 +66,8 @@ async def get_data_status() -> Dict[str, Any]:
 
 @router.get("/analysis/{period}")
 async def get_analysis(
-    period: str
+    period: str,
+    _: str = Depends(verify_api_key)
 ) -> Dict[str, Any]:
     """Get analysis for a specific time period.
     

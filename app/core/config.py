@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
+import secrets
 
 
 class Settings(BaseSettings):
@@ -15,6 +16,9 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     api_reload: bool = False
+    
+    # Authentication
+    api_key: str = secrets.token_urlsafe(32)  # Generate random key if not provided
     
     # CORS settings
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
