@@ -110,7 +110,7 @@ git push -u origin main
 6. Set environment variables:
    - `MONGODB_USERNAME` = your MongoDB username
    - `MONGODB_PW` = your MongoDB password
-   - `MONGODB_URI` = your MongoDB connection string
+   - `MONGODB_URI_TEMPLATE` = your MongoDB connection string template
    - `MONGODB_DATABASE` = myCGMitc
 7. Click "Deploy"
 8. Wait 2-3 minutes - you'll get a live URL!

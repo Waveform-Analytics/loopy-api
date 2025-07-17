@@ -229,7 +229,7 @@ git push origin main
      - `API_KEY` = `your-secret-key-here` (generate a strong one!)
      - `MONGODB_USERNAME` = your MongoDB username
      - `MONGODB_PW` = your MongoDB password
-     - `MONGODB_URI` = your MongoDB connection string
+     - `MONGODB_URI_TEMPLATE` = your MongoDB connection string template
      - `MONGODB_DATABASE` = myCGMitc
 
 3. **Generate a secure API key**:
@@ -257,7 +257,7 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 fly secrets set API_KEY=your-secret-key-here
 fly secrets set MONGODB_USERNAME=your_username
 fly secrets set MONGODB_PW=your_password
-fly secrets set MONGODB_URI=your_connection_string
+fly secrets set MONGODB_URI_TEMPLATE=your_connection_string_template
 fly secrets set MONGODB_DATABASE=myCGMitc
 ```
 
