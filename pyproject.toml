@@ -2,7 +2,7 @@
 name = "loopy-api"
 version = "1.0.0"
 description = "FastAPI-based backend service for accessing CGM data from MongoDB. Built for DIY diabetes monitoring setups."
-readme = "README.md"
+readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.104.0",
@@ -26,6 +26,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+include = ["README.md"]
 
 [tool.ruff]
 target-version = "py312"
