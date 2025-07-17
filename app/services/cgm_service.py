@@ -7,6 +7,26 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+def convert_numpy_types(obj):
+    """Recursively convert numpy types to native Python types for JSON serialization."""
+    if isinstance(obj, dict):
+        return {key: convert_numpy_types(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif hasattr(obj, 'item'):  # Other numpy scalars
+        return obj.item()
+    elif hasattr(obj, '__class__') and obj.__class__.__name__ == 'ObjectId':
+        return str(obj)
+    else:
+        return obj
+
+
 class CGMService:
     """Service layer for CGM data access using loopy-basic package."""
     
@@ -47,30 +67,15 @@ class CGMService:
                 # Convert DataFrame to JSON-serializable format
                 data_records = df.to_dict('records')
                 
-                # Convert datetime objects, ObjectIds, and numpy types to JSON-serializable types
+                # Convert datetime objects to strings for JSON serialization
                 for record in data_records:
                     if 'datetime' in record:
                         record['datetime'] = record['datetime'].isoformat()
                     if 'date_only' in record:
                         record['date_only'] = str(record['date_only'])
-                    # Convert ObjectId to string
-                    if '_id' in record:
-                        record['_id'] = str(record['_id'])
-                    # Handle any other ObjectId fields and numpy types
-                    for key, value in record.items():
-                        if hasattr(value, '__class__') and value.__class__.__name__ == 'ObjectId':
-                            record[key] = str(value)
-                        # Convert numpy types to native Python types
-                        elif isinstance(value, np.integer):
-                            record[key] = int(value)
-                        elif isinstance(value, np.floating):
-                            record[key] = float(value)
-                        elif isinstance(value, np.ndarray):
-                            record[key] = value.tolist()
-                        elif hasattr(value, 'item'):  # Other numpy scalars
-                            record[key] = value.item()
                 
-                return {
+                # Prepare the response
+                response = {
                     "data": data_records,
                     "analysis": analysis,
                     "last_updated": datetime.now().isoformat(),
@@ -80,6 +85,9 @@ class CGMService:
                         "hours": hours
                     }
                 }
+                
+                # Convert all numpy types and ObjectIds recursively
+                return convert_numpy_types(response)
                 
         except Exception as e:
             logger.error(f"Error retrieving CGM data: {e}")

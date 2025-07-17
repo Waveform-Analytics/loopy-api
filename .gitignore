@@ -9,6 +9,28 @@ wheels/
 # Virtual environments
 .venv
 
+# Environment variables (keep .env.example but not .env)
 .env
 
-.idea
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+logs/
+server.log
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# uv
+.uv/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
